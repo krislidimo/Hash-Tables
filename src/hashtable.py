@@ -46,47 +46,92 @@ class HashTable:
     def insert(self, key, value):
         '''
         Store the value with the given key.
-
         Hash collisions should be handled with Linked List Chaining.
-
         Fill this in.
         '''
-        pass
+        index = self._hash_mod(key)
+        head = self.storage[index]
+
+        # if head exist (at least 1 instance)
+        if head:
+            current = head
+            while current.key != key and current.next:
+                current = current.next
+
+            if current.key == key:
+                current.value = value
+            else:
+                current.next = LinkedPair(key, value)
+        # if index is empty
+        else:
+            self.storage[index] = LinkedPair(key, value)
 
 
 
     def remove(self, key):
         '''
         Remove the value stored with the given key.
-
         Print a warning if the key is not found.
-
         Fill this in.
         '''
         pass
+        index = self._hash_mod(key)
+        head = self.storage[index]
+
+        # if head exist (at least 1 instance)
+        if head:
+            previous = None
+            current = head
+            while current.key != key and current.next:
+                previous = current
+                current = current.next
+
+            # if key found on first insance
+            if current.key == head.key:
+                self.storage[index] = head.next
+            elif current.key == key:
+                previous.next = current.next
+            else:
+                print('Warning: Key not found!')
+        else:
+            print('Warning: Key not found!')
 
 
     def retrieve(self, key):
         '''
         Retrieve the value stored with the given key.
-
         Returns None if the key is not found.
-
         Fill this in.
         '''
-        pass
+        index = self._hash_mod(key)
+        head = self.storage[index]
+
+        # if head exist (at least 1 instance)
+        if head:
+            current = head
+            while current.key != key:
+                current = current.next
+            if current.key == key:
+                return current.value
+        
+        return None
 
 
     def resize(self):
         '''
         Doubles the capacity of the hash table and
         rehash all key/value pairs.
-
         Fill this in.
         '''
-        pass
+        oldList = self.storage
+        self.storage = [None]*self.capacity*2
+        self.capacity *= 2
 
-
+        for linkedPair in oldList:
+            current = linkedPair
+            while current:
+                self.insert(current.key, current.value)
+                current = current.next
 
 if __name__ == "__main__":
     ht = HashTable(2)
